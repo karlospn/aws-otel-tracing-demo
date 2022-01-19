@@ -1,0 +1,108 @@
+version: '3.4'
+
+networks:
+  tracing:
+    name: tracing-network
+    
+services:
+  rabbitmq:
+    image: rabbitmq:3.6.15-management
+    ports:
+      - 15672:15672
+      - 5672
+    networks:
+      - tracing
+
+  redis:
+    image: redis:6.2.1
+    ports:
+    - 6379:6379
+    networks:
+      - tracing
+
+  otel:
+    image: amazon/aws-otel-collector:latest
+    command: --config /config/config.yml
+    volumes:
+      - ./aws-otel-collector-config:/config
+    environment:
+      - AWS_ACCESS_KEY_ID=your-access-key
+      - AWS_SECRET_ACCESS_KEY=your-access-secret
+      - AWS_REGION=eu-west-1
+    ports:
+      - 4317:4317
+    networks:
+      - tracing
+
+  app1:
+    build:
+      context: ./App1.WebApi
+    ports:
+      - "5000:80"
+    networks:
+      - tracing
+    depends_on: 
+      - rabbitmq
+      - otel
+      - app3
+    environment:
+      RABBITMQ__HOST: rabbitmq
+      APP3ENDPOINT: http://app3/dummy
+      OTLP__ENDPOINT: http://otel:4317
+      OTEL_RESOURCE_ATTRIBUTES: service.name=App1
+
+  app2:
+    stdin_open: true
+    tty: true
+    build:
+      context: ./App2.RabbitConsumer.Console
+    networks:
+      - tracing
+    depends_on: 
+      - rabbitmq
+      - otel
+      - app3
+    entrypoint: ["./wait.sh", "30", "dotnet", "App2.RabbitConsumer.Console.dll"]
+    environment:
+      RABBITMQ__HOST: rabbitmq
+      APP3URIENDPOINT: http://app3
+      OTLP__ENDPOINT: http://otel:4317
+      OTEL_RESOURCE_ATTRIBUTES: service.name=App2
+
+
+  app3:
+    build:
+      context: ./App3.WebApi
+    ports:
+      - "5001:80"
+    networks:
+      - tracing
+    depends_on: 
+      - otel
+    environment:
+      OTLP__ENDPOINT: http://otel:4317
+      OTEL_RESOURCE_ATTRIBUTES: service.name=App3
+      S3_BUCKET_NAME: vytestevent
+      SQS__URI: https://sqs.eu-west-1.amazonaws.com/934045942927/test-queue
+      AWS_ACCESS_KEY_ID: your-access-key
+      AWS_SECRET_ACCESS_KEY: your-access-secret
+  
+  app4:
+    build:
+      context: ./App4.RabbitConsumer.HostedService
+    networks:
+      - tracing
+    depends_on: 
+      - otel
+      - redis
+    entrypoint: ["./wait.sh", "30", "dotnet", "App4.RabbitConsumer.HostedService.dll"]
+    environment:
+      REDIS__HOST: redis
+      REDIS__PORT: 6379
+      SQS__URI: https://sqs.eu-west-1.amazonaws.com/934045942927/test-queue
+      OTLP__ENDPOINT: http://otel:4317
+      OTEL_RESOURCE_ATTRIBUTES: service.name=App4
+      AWS_ACCESS_KEY_ID: your-access-key
+      AWS_SECRET_ACCESS_KEY: your-access-secret
+
+  

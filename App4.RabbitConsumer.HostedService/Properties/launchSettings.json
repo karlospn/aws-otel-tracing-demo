@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "App4.RabbitConsumer.HostedService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": "true"
+    }
+  }
+}
