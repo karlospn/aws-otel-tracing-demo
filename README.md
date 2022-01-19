@@ -1,5 +1,6 @@
-# aws-otel-tracing-demo
+# Introduction
+This repository contains an example about how to use AWS OTEL for tracing when we have a series of .NET apps.
 
-Work in progress
+# Content
 
-Example about how to use AWS OTEL when we have a series of distributed .NET apps communicating between them
+//TODO: Work in progress
