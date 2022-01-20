@@ -53,16 +53,16 @@ namespace App4.RabbitConsumer.HostedService
                         AttributeNames = new List<string> { "All"}, 
                     };
 
-                    var result = await _sqs.ReceiveMessageAsync(request);
+                    var result = await _sqs.ReceiveMessageAsync(request.QueueUrl, stoppingToken);
 
                     if (result.Messages.Any())
                     {
-                        await ProcessMessage(result.Messages[0]);
+                        await ProcessMessage(result.Messages[0], stoppingToken);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex.InnerException.ToString());
+                    _logger.LogError(ex.ToString());
                 }
 
                 _logger.LogInformation("Worker running at: {time}", DateTime.UtcNow);
@@ -70,7 +70,7 @@ namespace App4.RabbitConsumer.HostedService
             }
         }
 
-        private async Task ProcessMessage(Message msg)
+        private async Task ProcessMessage(Message msg, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Processing messages from SQS");
 
@@ -86,7 +86,7 @@ namespace App4.RabbitConsumer.HostedService
             {
                 ActivityHelper.AddActivityTags(activity);
                 
-                var item = await _cache.GetStringAsync("sqs.msg");
+                var item = await _cache.GetStringAsync("sqs.msg", cancellationToken);
 
                 if (string.IsNullOrEmpty(item))
                 {
@@ -97,9 +97,10 @@ namespace App4.RabbitConsumer.HostedService
                         new DistributedCacheEntryOptions
                         {
                             AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(1)
-                        });
+                        },
+                        cancellationToken);
 
-                    await _sqs.DeleteMessageAsync(_configuration["SQS:URI"], msg.ReceiptHandle);
+                    await _sqs.DeleteMessageAsync(_configuration["SQS:URI"], msg.ReceiptHandle, cancellationToken);
                 }
             }
         }
