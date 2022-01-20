@@ -13,6 +13,7 @@ using Amazon.SQS.Model;
 using System.Linq;
 using System.Collections.Generic;
 using OpenTelemetry;
+using App4.RabbitConsumer.HostedService.Helpers;
 
 namespace App4.RabbitConsumer.HostedService
 {
@@ -75,7 +76,7 @@ namespace App4.RabbitConsumer.HostedService
 
             var parentContext = Propagator.Extract(default,
                     msg,
-                    ExtractTraceContextFromMessage);
+                    ActivityHelper.ExtractTraceContextFromMessage);
 
             Baggage.Current = parentContext.Baggage;
 
@@ -83,7 +84,7 @@ namespace App4.RabbitConsumer.HostedService
                 ActivityKind.Server, 
                 parentContext.ActivityContext))
             {
-                AddActivityTags(activity);
+                ActivityHelper.AddActivityTags(activity);
                 
                 var item = await _cache.GetStringAsync("sqs.msg");
 
@@ -103,26 +104,6 @@ namespace App4.RabbitConsumer.HostedService
             }
         }
 
-        private IEnumerable<string> ExtractTraceContextFromMessage(Message msg, string key)
-        {
-            try
-            {
-                if (msg.Attributes.TryGetValue("AWSTraceHeader", out var value))
-                {
-                   return new[] { value };
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine($"Failed to extract trace context: {ex}");
-            }
-
-            return Enumerable.Empty<string>();
-        }
-
-        private void AddActivityTags(Activity activity)
-        {
-            activity?.SetTag("messaging.system", "sqs");
-        }
+     
     }
 }
