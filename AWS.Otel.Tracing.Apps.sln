@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App2.RabbitConsumer.Console
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App3.WebApi", "App3.WebApi\App3.WebApi.csproj", "{19C5123C-2CF3-4760-B034-B9B823288B40}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App4.RabbitConsumer.HostedService", "App4.RabbitConsumer.HostedService\App4.RabbitConsumer.HostedService.csproj", "{25059BE3-44DA-4FC3-BBB5-228E5CA7D6D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App4.SqsConsumer.HostedService", "App4.SqsConsumer.HostedService\App4.SqsConsumer.HostedService.csproj", "{25059BE3-44DA-4FC3-BBB5-228E5CA7D6D8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cdk", "cdk", "{02CFE56F-56C3-46C4-AC74-488BA2DE88C5}"
 EndProject
