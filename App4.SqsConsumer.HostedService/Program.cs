@@ -1,6 +1,7 @@
 using System;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.SQS;
+using App4.SqsConsumer.HostedService.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
@@ -9,8 +10,7 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-
-namespace App4.RabbitConsumer.HostedService
+namespace App4.SqsConsumer.HostedService
 {
     public class Program
     {

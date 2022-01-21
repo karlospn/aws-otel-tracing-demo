@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Amazon.SQS.Model;
 
-namespace App4.RabbitConsumer.HostedService.Helpers
+namespace App4.SqsConsumer.HostedService.Helpers
 {
     public static class ActivityHelper
     {

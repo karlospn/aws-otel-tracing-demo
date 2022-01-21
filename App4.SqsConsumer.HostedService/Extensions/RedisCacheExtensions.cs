@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
 
-namespace Microsoft.Extensions.Caching.StackExchangeRedis
+namespace App4.SqsConsumer.HostedService.Extensions
 {
     public static class RedisCacheExtensions
     {

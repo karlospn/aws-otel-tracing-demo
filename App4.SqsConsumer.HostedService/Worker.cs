@@ -1,21 +1,21 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
-using OpenTelemetry.Context.Propagation;
-using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
 using Amazon.SQS;
 using Amazon.SQS.Model;
-using System.Linq;
-using System.Collections.Generic;
+using App4.SqsConsumer.HostedService.Helpers;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OpenTelemetry;
-using App4.RabbitConsumer.HostedService.Helpers;
+using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
 
-namespace App4.RabbitConsumer.HostedService
+namespace App4.SqsConsumer.HostedService
 {
     public class Worker : BackgroundService
     {
