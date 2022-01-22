@@ -1,9 +1,7 @@
 using System;
+using Amazon.DynamoDBv2;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.SQS;
-using App4.SqsConsumer.HostedService.Extensions;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,11 +28,9 @@ namespace App4.SqsConsumer.HostedService
                         Region = Amazon.RegionEndpoint.EUWest1
                     });
 
-                    services.AddStackExchangeRedisCache(options =>
+                    services.AddAWSService<IAmazonDynamoDB>(new AWSOptions
                     {
-                        var connString =
-                            $"{hostContext.Configuration["Redis:Host"]}:{hostContext.Configuration["Redis:Port"]}";
-                        options.Configuration = connString;
+                        Region = Amazon.RegionEndpoint.EUWest1
                     });
 
                     services.AddOpenTelemetryTracing(builder =>
@@ -45,12 +41,7 @@ namespace App4.SqsConsumer.HostedService
 
                         builder.AddAspNetCoreInstrumentation()
                             .AddXRayTraceId()
-                            //.AddAWSInstrumentation()
-                            .Configure((sp, builder) =>
-                              {
-                                  RedisCache cache = (RedisCache)sp.GetRequiredService<IDistributedCache>();
-                                  builder.AddRedisInstrumentation(cache.GetConnection());
-                              })
+                            .AddAWSInstrumentation()
                             .AddSource(nameof(Worker))
                             .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("App4"))
                             .AddOtlpExporter(opts =>

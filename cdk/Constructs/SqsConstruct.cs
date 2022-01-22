@@ -10,7 +10,8 @@ namespace Aws.Otel.Cdk.Stack.Constructs
         public SqsConstruct(Construct scope, string id, User user) 
             : base(scope, id)
         {
-            var queue = new Queue(this, "aws-otel-demo-sqs-queue",
+            var queue = new Queue(this, 
+                "aws-otel-demo-sqs-queue",
                 new QueueProps
             {
                 QueueName = "aws-otel-demo-sqs-queue",
@@ -26,7 +27,9 @@ namespace Aws.Otel.Cdk.Stack.Constructs
 
             queue.AddToResourcePolicy(policy);
 
-            _ = new CfnOutput(this, "sqs-uri", new CfnOutputProps
+            _ = new CfnOutput(this, 
+                "sqs-uri", 
+                new CfnOutputProps
             {
                 Description = "SQS Queue URI ",
                 Value = queue.QueueUrl

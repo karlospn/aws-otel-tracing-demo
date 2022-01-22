@@ -10,7 +10,9 @@ namespace Aws.Otel.Cdk.Stack.Constructs
         public IamUserConstruct(Construct scope, string id) 
             : base(scope, id)
         {
-            User = new User(this, "iam-user", new UserProps
+            User = new User(this,
+                "iam-user",
+                new UserProps
             {
                 UserName = "aws-otel-tracing-demo-user",
                 ManagedPolicies = new []
@@ -20,18 +22,24 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 }
             });
 
-            var accessKey = new AccessKey(this, "iam-user-access-key", new AccessKeyProps
+            var accessKey = new AccessKey(this, 
+                "iam-user-access-key", 
+                new AccessKeyProps
             {
                 User = User
             });
 
-            _ = new CfnOutput(this, "user-key", new CfnOutputProps
+            _ = new CfnOutput(this, 
+                "user-key", 
+                new CfnOutputProps
             {
                 Description = "IAM User access key",
                 Value = accessKey.AccessKeyId
             });
 
-            _ = new CfnOutput(this, "user-secret", new CfnOutputProps
+            _ = new CfnOutput(this, 
+                "user-secret", 
+                new CfnOutputProps
             {
                 Description = "IAM User secret key",
                 Value = accessKey.SecretAccessKey.ToString()

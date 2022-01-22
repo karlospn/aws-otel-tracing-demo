@@ -29,7 +29,9 @@ namespace Aws.Otel.Cdk.Stack.Constructs
 
             bucket.AddToResourcePolicy(policy);
 
-            _ = new CfnOutput(this, "s3-bucket-name", new CfnOutputProps
+            _ = new CfnOutput(this,
+                "s3-bucket-name", 
+                new CfnOutputProps
             {
                 Description = "S3 Bucket Name",
                 Value = bucket.BucketName

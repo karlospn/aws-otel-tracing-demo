@@ -29,7 +29,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 }},
                 AutoMinorVersionUpgrade = false,
                 DeploymentMode = "SINGLE_INSTANCE",
-                EngineVersion = "3.8.6",
+                EngineVersion = "3.8.26",
                 HostInstanceType = "mq.t3.micro",
                 SubnetIds = subnetIds
             });

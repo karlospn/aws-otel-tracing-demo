@@ -12,12 +12,9 @@
 	<PackageReference Include="OpenTelemetry.Contrib.Instrumentation.AWS" Version="1.0.1" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.2.0-rc1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8" />
-    <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.2.0-rc1" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.0.0-rc8" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.1" />
 	<PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.1" />
-	<PackageReference Include="AWSSDK.S3" Version="3.7.7.14" />
 	<PackageReference Include="AWSSDK.SQS" Version="3.7.2.14" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.2.12" />
   </ItemGroup>
 </Project>

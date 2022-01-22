@@ -17,6 +17,9 @@ namespace Aws.Otel.Cdk.Stack.Stacks
             var iamUser = new IamUserConstruct(this,
                 "aws-otel-demo-iam-user-construct");
 
+            _ = new DynamoDbTableConstruct(this,
+                "aws-otel-demo-redis-cache-construct");
+
             _ = new S3BucketConstruct(this,
                 "aws-otel-demo-s3-bucket-construct", iamUser.User);
 
@@ -26,8 +29,7 @@ namespace Aws.Otel.Cdk.Stack.Stacks
             _ = new ActiveMqRabbitConstruct(this,
                 "aws-otel-demo-rabbit-cluster-construct", vpc.Vpc);
 
-            _ = new ElasticCacheRedisConstruct(this,
-                "aws-otel-demo-redis-cache-construct", vpc.Vpc);
+
         }
     }
 }

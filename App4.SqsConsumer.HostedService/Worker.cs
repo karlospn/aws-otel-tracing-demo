@@ -4,10 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using App4.SqsConsumer.HostedService.Helpers;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,20 +24,20 @@ namespace App4.SqsConsumer.HostedService
         private static readonly TextMapPropagator Propagator = new AWSXRayPropagator();
 
         private readonly ILogger<Worker> _logger;
-        private readonly IDistributedCache _cache;
         private readonly IConfiguration _configuration;
         private readonly IAmazonSQS _sqs;
+        private readonly IAmazonDynamoDB _dynamoDb;
 
 
         public Worker(ILogger<Worker> logger,
-            IDistributedCache cache,
             IConfiguration configuration, 
-            IAmazonSQS sqs)
+            IAmazonSQS sqs, 
+            IAmazonDynamoDB dynamoDb)
         {
             _logger = logger;
-            _cache = cache;
             _configuration = configuration;
             _sqs = sqs;
+            _dynamoDb = dynamoDb;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -86,22 +87,19 @@ namespace App4.SqsConsumer.HostedService
             {
                 ActivityHelper.AddActivityTags(activity);
                 
-                var item = await _cache.GetStringAsync("sqs.msg", cancellationToken);
+                _logger.LogInformation("Add item to DynamoDb");
 
-                if (string.IsNullOrEmpty(item))
+                var items = Table.LoadTable(_dynamoDb, "Items");
+                
+                var doc = new Document
                 {
-                    _logger.LogInformation("Add item into redis cache");
+                    ["Id"] = Guid.NewGuid(),
+                    ["Message"] = msg.Body
+                };
 
-                    await _cache.SetStringAsync("sqs.msg",
-                        msg.Body,
-                        new DistributedCacheEntryOptions
-                        {
-                            AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(1)
-                        },
-                        cancellationToken);
-
-                    await _sqs.DeleteMessageAsync(_configuration["SQS:URI"], msg.ReceiptHandle, cancellationToken);
-                }
+                await items.PutItemAsync(doc, cancellationToken);
+                await _sqs.DeleteMessageAsync(_configuration["SQS:URI"], msg.ReceiptHandle, cancellationToken);
+                
             }
         }
 
