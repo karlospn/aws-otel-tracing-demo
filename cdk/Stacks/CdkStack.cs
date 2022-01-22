@@ -28,8 +28,6 @@ namespace Aws.Otel.Cdk.Stack.Stacks
 
             _ = new ActiveMqRabbitConstruct(this,
                 "aws-otel-demo-rabbit-cluster-construct", vpc.Vpc);
-
-
         }
     }
 }

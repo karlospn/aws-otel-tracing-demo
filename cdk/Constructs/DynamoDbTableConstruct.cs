@@ -13,7 +13,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 "aws-otel-tracing-demo-items-table",
                 new TableProps
                 {
-                    TableName = "items",
+                    TableName = "Items",
                     RemovalPolicy = RemovalPolicy.DESTROY,
                     PartitionKey = new Attribute { Name = "Id", Type = AttributeType.STRING },
                     ReadCapacity = 5,
