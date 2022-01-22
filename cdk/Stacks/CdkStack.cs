@@ -11,20 +11,23 @@ namespace Aws.Otel.Cdk.Stack.Stacks
             IStackProps props = null) 
             : base(scope, id, props)
         {
-            _ = new IamUserConstruct(this,
-                "aws-otel-demo-user");
+            var vpc = new VpcConstruct(this,
+                "aws-otel-demo-vpc-construct");
 
-            _ = new ActiveMqRabbitConstruct(this,
-                "aws-otel-demo-rabbit-cluster");
+            var iamUser = new IamUserConstruct(this,
+                "aws-otel-demo-iam-user-construct");
 
             _ = new S3BucketConstruct(this,
-                "aws-otel-demo-s3-bucket");
+                "aws-otel-demo-s3-bucket-construct", iamUser.User);
 
             _ = new SqsConstruct(this,
-                "aws-otel-demo-sqs-queue");
+                "aws-otel-demo-sqs-queue-construct", iamUser.User);
+
+            _ = new ActiveMqRabbitConstruct(this,
+                "aws-otel-demo-rabbit-cluster-construct", vpc.Vpc);
 
             _ = new ElasticCacheRedisConstruct(this,
-                "aws-otel-demo-redis-cache");
+                "aws-otel-demo-redis-cache-construct", vpc.Vpc);
         }
     }
 }

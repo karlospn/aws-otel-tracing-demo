@@ -1,5 +1,5 @@
 {
-  "app": "dotnet run -p Aws.Otel.Cdk.Stack.csproj",
+  "app": "dotnet run --project Aws.Otel.Cdk.Stack.csproj",
   "context": {
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": true,
     "@aws-cdk/core:stackRelativeExports": true,

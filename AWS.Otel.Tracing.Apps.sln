@@ -15,6 +15,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cdk", "cdk", "{02CFE56F-56C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aws.Otel.Cdk.Stack", "cdk\Aws.Otel.Cdk.Stack.csproj", "{C51F7767-6330-4630-8B3A-1E3FE6A1FC4E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws-otel-collector-config", "aws-otel-collector-config", "{53EFEB3F-FC03-4166-954D-ADA8E9E7050F}"
+	ProjectSection(SolutionItems) = preProject
+		aws-otel-collector-config\config.yml = aws-otel-collector-config\config.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-compose", "docker-compose", "{97AB6B16-188F-4205-8A24-CA518E2E0114}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
