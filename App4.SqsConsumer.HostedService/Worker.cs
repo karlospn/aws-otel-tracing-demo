@@ -51,10 +51,10 @@ namespace App4.SqsConsumer.HostedService
                         QueueUrl = _configuration["SQS:URI"],
                         MaxNumberOfMessages = 1,
                         WaitTimeSeconds = 5,
-                        AttributeNames = new List<string> { "All"}, 
+                        AttributeNames = new List<string> { "All" },
                     };
 
-                    var result = await _sqs.ReceiveMessageAsync(request.QueueUrl, stoppingToken);
+                    var result = await _sqs.ReceiveMessageAsync(request, stoppingToken);
 
                     if (result.Messages.Any())
                     {

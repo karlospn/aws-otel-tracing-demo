@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Authentication;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +38,19 @@ namespace App1.WebApi.Controllers
             {
                 using (var activity = Activity.StartActivity("RabbitMq Publish", ActivityKind.Producer))
                 {
-                    var factory = new ConnectionFactory { HostName = _configuration["RabbitMq:Host"] };
+                    var factory = new ConnectionFactory
+                    {
+                        HostName = _configuration["RabbitMq:Host"],
+                        UserName = _configuration["RabbitMq:Username"],
+                        Password = _configuration["RabbitMq:Password"],
+                        Ssl = new SslOption
+                        {
+                            Enabled = true,
+                            Version = SslProtocols.None,
+                            CertificateValidationCallback = (_, _, _, _) => true
+                        }
+                    };
+
                     using (var connection = factory.CreateConnection())
                     using (var channel = connection.CreateModel())
                     {

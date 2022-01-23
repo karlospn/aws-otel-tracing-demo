@@ -42,6 +42,7 @@ namespace App3.WebApi
             services.AddOpenTelemetryTracing(builder =>
             {
                 builder.AddAspNetCoreInstrumentation()
+                    .AddSource(nameof(SqsRepository))
                     .AddXRayTraceId()
                     .AddAWSInstrumentation()
                     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("App3"))

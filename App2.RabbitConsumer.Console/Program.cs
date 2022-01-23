@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -51,7 +52,19 @@ namespace App2.RabbitConsumer.Console
 
         public static void DoWork()
         {
-            var factory = new ConnectionFactory() { HostName = _configuration["RabbitMq:Host"], DispatchConsumersAsync = true };
+            var factory = new ConnectionFactory()
+            {
+                HostName = _configuration["RabbitMq:Host"],
+                UserName = _configuration["RabbitMq:Username"],
+                Password = _configuration["RabbitMq:Password"],
+                Ssl = new SslOption
+                {
+                    Enabled = true,
+                    Version = SslProtocols.None,
+                    CertificateValidationCallback = (_, _, _, _) => true
+                },
+                DispatchConsumersAsync = true,
+            };
 
             var rabbitMqConnection = factory.CreateConnection();
             var rabbitMqChannel = rabbitMqConnection.CreateModel();

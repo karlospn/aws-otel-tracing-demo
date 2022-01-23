@@ -5,8 +5,8 @@ WORKDIR /app
 LABEL stage=app-build
 
 # Copy csproj and restore dependencies
-COPY App4.RabbitConsumer.HostedService.csproj ./src/
-RUN dotnet restore "./src/App4.RabbitConsumer.HostedService.csproj"
+COPY App4.SqsConsumer.HostedService.csproj ./src/
+RUN dotnet restore "./src/App4.SqsConsumer.HostedService.csproj"
 
 # Copy everything, build and publish
 COPY . ./src/
@@ -17,6 +17,4 @@ RUN dotnet publish src/*.csproj -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim
 WORKDIR /app
 COPY --from=build-env /app/publish .
-COPY wait.sh .
-RUN chmod +x wait.sh
-ENTRYPOINT ["dotnet", "App4.RabbitConsumer.HostedService.dll"]
+ENTRYPOINT ["dotnet", "App4.SqsConsumer.HostedService.dll"]
