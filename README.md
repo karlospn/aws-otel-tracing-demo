@@ -18,7 +18,7 @@ The repository contains the following applications:
     - The ``/publish-message``  endpoint queues a message into an **AWS ActiveMQ Rabbit queue**.
 
 - **App2.RabbitConsumer.Console** is a .NET6 console app. 
-  - Dequeues messages from the Rabbit queue and makes a HTTP request to the **App3** ``/sql-to-event`` endpoint with the content of the message.
+  - Dequeues messages from the Rabbit queue and makes a HTTP request to the **App3** ``/s3-to-event`` endpoint with the content of the message.
 
 - **App3.WebApi** is a .NET6 Web API with 2 endpoints.
     - The ``/dummy`` endpoint returns a fixed "Ok" response.
@@ -28,6 +28,8 @@ The repository contains the following applications:
   - A Hosted Service reads the messages from the **AWS SQS queue** and stores it into a **DynamoDb table**.
 
 # AWS Resources
+
+> _This repository has a CDK app that will create all these resources._
 
 This demo uses the following AWS resources:
 
@@ -94,11 +96,11 @@ There is **some work** that needs to be done in the docker-compose file before y
     - ``<ADD-S3-BUCKET-NAME>``
     - ``<ADD-SQS-URI>``
 
-You can find the correct values in the output of the CDK app. Here's an example of the output of the AWS CDK app
+You can find the correct values in the output of the CDK app. Here's an example of how the output of the AWS CDK app looks like:
 
 ![cdk-app-output](https://github.com/karlospn/aws-otel-tracing-demo/blob/main/docs/aws-otel-cdk-output.png)
 
-And here's how the docker-compose look like after replacing the placeholder values:
+And here's an example of how the docker-compose looks like after replacing the placeholder values:
 
 ```yaml
 version: '3.4'
@@ -192,10 +194,10 @@ services:
       AWS_SECRET_ACCESS_KEY: GO7BvT9IBLb4NudL0aGO7BvT9IBLb4NudL0a
 ```
 
-To summarize, if you want to run the apps you'll need to do the following steps:
+To summarize, if you want to run this demo you'll need to do the following steps:
 - Execute the CDK app on your AWS account.
 - Replace the values on the docker-compose.
-- Execute the docker-compose.
+- Execute ``docker-compose up``.
 
 # Output
 
