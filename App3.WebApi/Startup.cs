@@ -45,7 +45,6 @@ namespace App3.WebApi
                 builder.AddAspNetCoreInstrumentation()
                     .AddXRayTraceId()
                     .AddAWSInstrumentation()
-                    .AddSource(nameof(SqsRepository))
                     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("App3"))
                     .AddOtlpExporter(opts =>
                     {

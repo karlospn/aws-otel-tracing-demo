@@ -51,7 +51,7 @@ namespace App4.SqsConsumer.HostedService
                         QueueUrl = _configuration["SQS:URI"],
                         MaxNumberOfMessages = 1,
                         WaitTimeSeconds = 5,
-                        MessageAttributeNames = new List<string>{ "X-Amzn-Trace-Id" }
+                        AttributeNames = new List<string> { "All" }
                     };
 
                     var result = await _sqs.ReceiveMessageAsync(request, stoppingToken);
@@ -98,6 +98,7 @@ namespace App4.SqsConsumer.HostedService
                 };
 
                 await items.PutItemAsync(doc, cancellationToken);
+
                 await _sqs.DeleteMessageAsync(_configuration["SQS:URI"], msg.ReceiptHandle, cancellationToken);
                 
             }

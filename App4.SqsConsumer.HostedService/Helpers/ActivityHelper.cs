@@ -12,9 +12,9 @@ namespace App4.SqsConsumer.HostedService.Helpers
         {
             try
             {
-                if (msg.MessageAttributes.TryGetValue(key, out var value))
+                if (msg.Attributes.TryGetValue("AWSTraceHeader", out var value))
                 {
-                    return new[] { value.StringValue };
+                    return new[] { value };
                 }
             }
             catch (Exception ex)

@@ -33,11 +33,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                     "logs:CreateLogStream",
                     "logs:DescribeLogStreams",
                     "logs:DescribeLogGroups",
-                    "xray:PutTraceSegments",
-                    "xray:PutTelemetryRecords",
-                    "xray:GetSamplingRules",
-                    "xray:GetSamplingTargets",
-                    "xray:GetSamplingStatisticSummaries",
+                    "xray:*",
                     "ssm:GetParameters"
                 },
                 Resources = new[] { "*" },

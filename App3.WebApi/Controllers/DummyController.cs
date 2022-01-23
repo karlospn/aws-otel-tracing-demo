@@ -10,13 +10,11 @@ namespace App3.WebApi.Controllers
     public class DummyController : ControllerBase
     {
         private readonly ILogger<DummyController> _logger;
-       
-
+        
         public DummyController(
             ILogger<DummyController> logger)
         {
             _logger = logger;
-
         }
 
         [HttpGet]
