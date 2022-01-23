@@ -175,7 +175,7 @@ services:
       OTLP__ENDPOINT: http://otel:4317
       OTEL_RESOURCE_ATTRIBUTES: service.name=App3
       S3_BUCKET_NAME: aws-otel-demo-s3-bucket-17988
-      SQS__URI: https://sqs.eu-west-1.amazonaws.com/7/aws-otel-demo-sqs-queue
+      SQS__URI: https://sqs.eu-west-1.amazonaws.com/7777777/aws-otel-demo-sqs-queue
       AWS_ACCESS_KEY_ID: AKIA5S6L5S6L5S6L5S6L
       AWS_SECRET_ACCESS_KEY: GO7BvT9IBLb4NudL0aGO7BvT9IBLb4NudL0a
   
