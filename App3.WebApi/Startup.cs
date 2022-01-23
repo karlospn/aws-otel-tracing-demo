@@ -39,12 +39,13 @@ namespace App3.WebApi
             });
 
             services.AddControllers().AddNewtonsoftJson();
+
             services.AddOpenTelemetryTracing(builder =>
             {
                 builder.AddAspNetCoreInstrumentation()
-                    .AddSource(nameof(SqsRepository))
                     .AddXRayTraceId()
                     .AddAWSInstrumentation()
+                    .AddSource(nameof(SqsRepository))
                     .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("App3"))
                     .AddOtlpExporter(opts =>
                     {

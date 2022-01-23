@@ -12,14 +12,14 @@ namespace App4.SqsConsumer.HostedService.Helpers
         {
             try
             {
-                if (msg.Attributes.TryGetValue("AWSTraceHeader", out var value))
+                if (msg.MessageAttributes.TryGetValue(key, out var value))
                 {
-                    return new[] { value };
+                    return new[] { value.StringValue };
                 }
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine($"Failed to extract trace context: {ex}");
+                Console.WriteLine($"Failed to extract trace context: {ex}");
             }
 
             return Enumerable.Empty<string>();

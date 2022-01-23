@@ -51,7 +51,7 @@ namespace App4.SqsConsumer.HostedService
                         QueueUrl = _configuration["SQS:URI"],
                         MaxNumberOfMessages = 1,
                         WaitTimeSeconds = 5,
-                        AttributeNames = new List<string> { "All" },
+                        MessageAttributeNames = new List<string>{ "X-Amzn-Trace-Id" }
                     };
 
                     var result = await _sqs.ReceiveMessageAsync(request, stoppingToken);
