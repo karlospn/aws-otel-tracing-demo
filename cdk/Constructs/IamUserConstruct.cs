@@ -10,6 +10,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
         public IamUserConstruct(Construct scope, string id) 
             : base(scope, id)
         {
+
             User = new User(this,
                 "iam-user",
                 new UserProps
@@ -18,9 +19,33 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 ManagedPolicies = new []
                 {
                     ManagedPolicy.FromAwsManagedPolicyName("AmazonS3FullAccess"),
-                    ManagedPolicy.FromAwsManagedPolicyName("AmazonSQSFullAccess")
+                    ManagedPolicy.FromAwsManagedPolicyName("AmazonSQSFullAccess"),
+                    ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBFullAccess")
                 }
             });
+
+            var collectorPolicy = new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "logs:PutLogEvents",
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:DescribeLogStreams",
+                    "logs:DescribeLogGroups",
+                    "xray:PutTraceSegments",
+                    "xray:PutTelemetryRecords",
+                    "xray:GetSamplingRules",
+                    "xray:GetSamplingTargets",
+                    "xray:GetSamplingStatisticSummaries",
+                    "ssm:GetParameters"
+                },
+                Resources = new[] { "*" },
+                Effect = Effect.ALLOW
+            });
+
+            User.AddToPolicy(collectorPolicy);
+            
 
             var accessKey = new AccessKey(this, 
                 "iam-user-access-key", 

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Amazon.CDK;
 using Amazon.CDK.AWS.AmazonMQ;
 using Amazon.CDK.AWS.EC2;
 using Constructs;
@@ -14,7 +15,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 .Select(x => x.SubnetId)
                 .ToArray();
 
-            _ = new CfnBroker(this, 
+            var cluster = new CfnBroker(this, 
                 "aws-otel-tracing-demo-rabbit-cluster", 
                 new CfnBrokerProps
             {
@@ -22,8 +23,8 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 EngineType = "RABBITMQ",
                 PubliclyAccessible = true,
                 Users = new[] { new CfnBroker.UserProperty {
-                    Password = "specialguest",
-                    Username = "P@ssw0rd111!",
+                    Username = "specialguest",
+                    Password = "P@ssw0rd111!",
                     ConsoleAccess = true,
                     Groups = new [] { "administrator" }
                 }},
@@ -33,6 +34,14 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 HostInstanceType = "mq.t3.micro",
                 SubnetIds = subnetIds
             });
+
+            _ = new CfnOutput(this,
+                "rabbit-endpoint",
+                new CfnOutputProps
+                {
+                    Description = "Rabbit Endpoint",
+                    Value = Fn.Select(0, cluster.AttrAmqpEndpoints)
+                });
 
         }
     }
