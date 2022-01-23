@@ -5,20 +5,6 @@ networks:
     name: tracing-network
     
 services:
-  rabbitmq:
-    image: rabbitmq:3.6.15-management
-    ports:
-      - 15672:15672
-      - 5672
-    networks:
-      - tracing
-
-  redis:
-    image: redis:6.2.1
-    ports:
-    - 6379:6379
-    networks:
-      - tracing
 
   otel:
     image: amazon/aws-otel-collector:latest
@@ -26,8 +12,8 @@ services:
     volumes:
       - ./aws-otel-collector-config:/config
     environment:
-      - AWS_ACCESS_KEY_ID=your-access-key
-      - AWS_SECRET_ACCESS_KEY=your-access-secret
+      - AWS_ACCESS_KEY_ID=<ADD-AWS-USER-ACCESS-KEY>
+      - AWS_SECRET_ACCESS_KEY=<ADD-AWS-USER-SECRET-KEY>
       - AWS_REGION=eu-west-1
     ports:
       - 4317:4317
@@ -42,11 +28,12 @@ services:
     networks:
       - tracing
     depends_on: 
-      - rabbitmq
       - otel
       - app3
     environment:
-      RABBITMQ__HOST: rabbitmq
+      RABBITMQ__HOST: <ADD-AMAZONMQ-RABBIT-HOST-ENDPOINT>
+      RABBITMQ__USERNAME: specialguest
+      RABBITMQ__PASSWORD: P@ssw0rd111!
       APP3ENDPOINT: http://app3/dummy
       OTLP__ENDPOINT: http://otel:4317
       OTEL_RESOURCE_ATTRIBUTES: service.name=App1
@@ -59,12 +46,12 @@ services:
     networks:
       - tracing
     depends_on: 
-      - rabbitmq
       - otel
       - app3
-    entrypoint: ["./wait.sh", "30", "dotnet", "App2.RabbitConsumer.Console.dll"]
     environment:
-      RABBITMQ__HOST: rabbitmq
+      RABBITMQ__HOST: <ADD-AMAZONMQ-RABBIT-HOST-ENDPOINT>
+      RABBITMQ__USERNAME: specialguest
+      RABBITMQ__PASSWORD: P@ssw0rd111!
       APP3URIENDPOINT: http://app3
       OTLP__ENDPOINT: http://otel:4317
       OTEL_RESOURCE_ATTRIBUTES: service.name=App2
@@ -82,27 +69,23 @@ services:
     environment:
       OTLP__ENDPOINT: http://otel:4317
       OTEL_RESOURCE_ATTRIBUTES: service.name=App3
-      S3_BUCKET_NAME: vytestevent
-      SQS__URI: https://sqs.eu-west-1.amazonaws.com/934045942927/test-queue
-      AWS_ACCESS_KEY_ID: your-access-key
-      AWS_SECRET_ACCESS_KEY: your-access-secret
+      S3_BUCKET_NAME: <ADD-S3-BUCKET-NAME>
+      SQS__URI: <ADD-SQS-URI>
+      AWS_ACCESS_KEY_ID: <ADD-AWS-USER-ACCESS-KEY>
+      AWS_SECRET_ACCESS_KEY: <ADD-AWS-USER-SECRET-KEY>
   
   app4:
     build:
-      context: ./App4.RabbitConsumer.HostedService
+      context: ./App4.SqsConsumer.HostedService
     networks:
       - tracing
     depends_on: 
       - otel
-      - redis
-    entrypoint: ["./wait.sh", "30", "dotnet", "App4.RabbitConsumer.HostedService.dll"]
     environment:
-      REDIS__HOST: redis
-      REDIS__PORT: 6379
-      SQS__URI: https://sqs.eu-west-1.amazonaws.com/934045942927/test-queue
       OTLP__ENDPOINT: http://otel:4317
       OTEL_RESOURCE_ATTRIBUTES: service.name=App4
-      AWS_ACCESS_KEY_ID: your-access-key
-      AWS_SECRET_ACCESS_KEY: your-access-secret
+      SQS__URI: <ADD-SQS-URI>
+      AWS_ACCESS_KEY_ID: <ADD-AWS-USER-ACCESS-KEY>
+      AWS_SECRET_ACCESS_KEY: <ADD-AWS-USER-SECRET-KEY>
 
   
