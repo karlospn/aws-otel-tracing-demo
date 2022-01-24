@@ -11,14 +11,14 @@ And this repository contains a practical example about how to use AWS OTEL for t
 
 The repository contains the following applications:
 
-![components-diagram](https://github.com/karlospn/aws-otel-tracing-demo/blob/master/docs/components-diagram.png)
+![components-diagram](https://raw.githubusercontent.com/karlospn/aws-otel-tracing-demo/main/docs/components-diagram.png)
 
 - **App1.WebApi** is a .NET6 Web API with 2 endpoints.
     - The ``/http`` endpoint  makes an HTTP request to the **App2** ``/dummy`` endpoint.
     - The ``/publish-message``  endpoint queues a message into an **AWS ActiveMQ Rabbit queue**.
 
 - **App2.RabbitConsumer.Console** is a .NET6 console app. 
-  - Dequeues messages from the Rabbit queue and makes a HTTP request to the **App3** ``/sql-to-event`` endpoint with the content of the message.
+  - Dequeues messages from the Rabbit queue and makes a HTTP request to the **App3** ``/s3-to-event`` endpoint with the content of the message.
 
 - **App3.WebApi** is a .NET6 Web API with 2 endpoints.
     - The ``/dummy`` endpoint returns a fixed "Ok" response.
@@ -28,6 +28,8 @@ The repository contains the following applications:
   - A Hosted Service reads the messages from the **AWS SQS queue** and stores it into a **DynamoDb table**.
 
 # AWS Resources
+
+> _This repository has a CDK app that will create all these resources._
 
 This demo uses the following AWS resources:
 
@@ -64,7 +66,7 @@ This demo uses the following AWS resources:
 ```
 This policy is needed by the AWS OTEL Collector.
 
-![aws-resources](https://github.com/karlospn/aws-otel-tracing-demo/blob/master/docs/aws-otel-cdk-stack-resources.png)
+![aws-resources](https://github.com/karlospn/aws-otel-tracing-demo/blob/main/docs/aws-otel-cdk-stack-resources.png)
 
 
 # OpenTelemetry .NET Client
@@ -94,11 +96,11 @@ There is **some work** that needs to be done in the docker-compose file before y
     - ``<ADD-S3-BUCKET-NAME>``
     - ``<ADD-SQS-URI>``
 
-You can find the correct values in the output of the CDK app. Here's an example of the output of the AWS CDK app
+You can find the correct values in the output of the CDK app. Here's an example of how the output of the AWS CDK app looks like:
 
-![cdk-app-output](https://github.com/karlospn/aws-otel-tracing-demo/blob/master/docs/aws-otel-cdk-output.png)
+![cdk-app-output](https://github.com/karlospn/aws-otel-tracing-demo/blob/main/docs/aws-otel-cdk-output.png)
 
-And here's how the docker-compose look like after replacing the placeholder values:
+And here's an example of how the docker-compose looks like after replacing the placeholder values:
 
 ```yaml
 version: '3.4'
@@ -173,7 +175,7 @@ services:
       OTLP__ENDPOINT: http://otel:4317
       OTEL_RESOURCE_ATTRIBUTES: service.name=App3
       S3_BUCKET_NAME: aws-otel-demo-s3-bucket-17988
-      SQS__URI: https://sqs.eu-west-1.amazonaws.com/7/aws-otel-demo-sqs-queue
+      SQS__URI: https://sqs.eu-west-1.amazonaws.com/7777777/aws-otel-demo-sqs-queue
       AWS_ACCESS_KEY_ID: AKIA5S6L5S6L5S6L5S6L
       AWS_SECRET_ACCESS_KEY: GO7BvT9IBLb4NudL0aGO7BvT9IBLb4NudL0a
   
@@ -192,17 +194,17 @@ services:
       AWS_SECRET_ACCESS_KEY: GO7BvT9IBLb4NudL0aGO7BvT9IBLb4NudL0a
 ```
 
-To summarize, if you want to run the apps you'll need to do the following steps:
+To summarize, if you want to run this demo you'll need to do the following steps:
 - Execute the CDK app on your AWS account.
 - Replace the values on the docker-compose.
-- Execute the docker-compose.
+- Execute ``docker-compose up``.
 
 # Output
 
 Here's the XRay trace output:
 
-![xray-trace-output](https://github.com/karlospn/aws-otel-tracing-demo/blob/master/docs/xray-fulltrace.png)
+![xray-trace-output](https://github.com/karlospn/aws-otel-tracing-demo/blob/main/docs/xray-fulltrace.png)
 
 And the XRay Service Map output:
 
-![xray-trace-output](https://github.com/karlospn/aws-otel-tracing-demo/blob/master/docs/xray-servicemap-sqs-noise.png)
+![xray-servicemap-output](https://github.com/karlospn/aws-otel-tracing-demo/blob/main/docs/xray-servicemap-sqs-noise.png)
