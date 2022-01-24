@@ -31,6 +31,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 "sqs-uri", 
                 new CfnOutputProps
             {
+                ExportName = "sqs-queue-uri",
                 Description = "SQS Queue URI ",
                 Value = queue.QueueUrl
             });

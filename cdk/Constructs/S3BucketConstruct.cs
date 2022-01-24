@@ -33,6 +33,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 "s3-bucket-name", 
                 new CfnOutputProps
             {
+                ExportName = "S3-bucket-name",
                 Description = "S3 Bucket Name",
                 Value = bucket.BucketName
             });

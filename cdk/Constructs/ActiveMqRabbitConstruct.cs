@@ -38,9 +38,11 @@ namespace Aws.Otel.Cdk.Stack.Constructs
             _ = new CfnOutput(this,
                 "rabbit-endpoint",
                 new CfnOutputProps
-                {
+                { 
+                    ExportName = "rabbitmq-host-endpoint",
                     Description = "Rabbit Endpoint",
                     Value = Fn.Select(0, cluster.AttrAmqpEndpoints)
+
                 });
 
         }

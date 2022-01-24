@@ -47,6 +47,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 "iam-user-access-key", 
                 new AccessKeyProps
             {
+
                 User = User
             });
 
@@ -54,6 +55,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 "user-key", 
                 new CfnOutputProps
             {
+                ExportName = "user-access-key",
                 Description = "IAM User access key",
                 Value = accessKey.AccessKeyId
             });
@@ -62,6 +64,7 @@ namespace Aws.Otel.Cdk.Stack.Constructs
                 "user-secret", 
                 new CfnOutputProps
             {
+                ExportName = "user-secret-key",
                 Description = "IAM User secret key",
                 Value = accessKey.SecretAccessKey.ToString()
             });

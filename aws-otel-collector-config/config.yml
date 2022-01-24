@@ -6,11 +6,10 @@ receivers:
 
 exporters:
   logging:
-    loglevel: info
+    loglevel: debug
   awsxray:
     region: eu-west-1
-  awsemf:
-    region: eu-west-1
+
 
 service:
   pipelines:
@@ -20,9 +19,3 @@ service:
       exporters:
         - logging
         - awsxray
-    metrics:
-      receivers:
-        - otlp
-      exporters:
-        - logging
-        - awsemf
