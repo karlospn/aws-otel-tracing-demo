@@ -18,7 +18,6 @@ namespace App1.WebApi.Controllers
     public class PublishMessageController : ControllerBase
     {
         private static readonly ActivitySource Activity = new(nameof(PublishMessageController));
-        private static readonly TextMapPropagator Propagator = new AWSXRayPropagator();
 
         private readonly ILogger<PublishMessageController> _logger;
         private readonly IConfiguration _configuration;
@@ -84,7 +83,8 @@ namespace App1.WebApi.Controllers
 
         private void AddActivityToHeader(Activity activity, IBasicProperties props)
         {
-            Propagator.Inject(new PropagationContext(activity.Context, Baggage.Current), props, InjectContextIntoHeader);
+            var propagator = Propagators.DefaultTextMapPropagator;
+            propagator.Inject(new PropagationContext(activity.Context, Baggage.Current), props, InjectContextIntoHeader);
             activity?.SetTag("messaging.system", "rabbitmq");
             activity?.SetTag("messaging.destination_kind", "queue");
             activity?.SetTag("messaging.rabbitmq.queue", "sample");

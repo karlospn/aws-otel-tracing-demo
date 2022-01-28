@@ -23,7 +23,6 @@ namespace App2.RabbitConsumer.Console
     public class Program
     {
         private static readonly ActivitySource Activity = new(nameof(Program));
-        private static readonly TextMapPropagator Propagator = new AWSXRayPropagator();
 
         private static IConfiguration _configuration;
         private static ILogger<Program> _logger;
@@ -98,7 +97,8 @@ namespace App2.RabbitConsumer.Console
         {
             try
             {
-                var parentContext = Propagator.Extract(default, ea.BasicProperties, ExtractTraceContextFromBasicProperties);
+                var propagator = Propagators.DefaultTextMapPropagator;
+                var parentContext = propagator.Extract(default, ea.BasicProperties, ExtractTraceContextFromBasicProperties);
                 Baggage.Current = parentContext.Baggage;
 
                 using (var activity = Activity.StartActivity("Process Message", ActivityKind.Server, parentContext.ActivityContext))
@@ -196,6 +196,8 @@ namespace App2.RabbitConsumer.Console
                    opts.Endpoint = new Uri(_configuration["Otlp:Endpoint"]);
                 })
                 .Build();
+
+            Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
 
             return provider;
         }

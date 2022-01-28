@@ -14,14 +14,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
-using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
 
 namespace App4.SqsConsumer.HostedService
 {
     public class Worker : BackgroundService
     {
         private static readonly ActivitySource Activity = new(nameof(Worker));
-        private static readonly TextMapPropagator Propagator = new AWSXRayPropagator();
 
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
@@ -75,7 +73,9 @@ namespace App4.SqsConsumer.HostedService
         {
             _logger.LogInformation("Processing messages from SQS");
 
-            var parentContext = Propagator.Extract(default,
+            var propagator = Propagators.DefaultTextMapPropagator;
+
+            var parentContext = propagator.Extract(default,
                     msg,
                     ActivityHelper.ExtractTraceContextFromMessage);
 

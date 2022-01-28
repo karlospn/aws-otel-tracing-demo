@@ -5,6 +5,8 @@ using Amazon.SQS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry;
+using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -49,6 +51,8 @@ namespace App4.SqsConsumer.HostedService
                                 opts.Endpoint = new Uri(hostContext.Configuration["Otlp:Endpoint"]);
                             });
                     });
+
+                    Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
                 });
     }
 }

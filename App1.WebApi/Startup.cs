@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry;
+using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -37,6 +39,8 @@ namespace App1.WebApi
                         opts.Endpoint = new Uri(Configuration["Otlp:Endpoint"]);
                     });
             });
+
+            Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
 
         }
 

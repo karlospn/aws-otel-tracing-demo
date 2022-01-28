@@ -11,6 +11,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.SQS;
+using OpenTelemetry;
+using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
 
 namespace App3.WebApi
 {
@@ -51,6 +53,8 @@ namespace App3.WebApi
                         opts.Endpoint = new Uri(Configuration["Otlp:Endpoint"]);
                     });
             });
+
+            Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
