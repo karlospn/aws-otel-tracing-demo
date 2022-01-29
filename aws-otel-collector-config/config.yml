@@ -4,18 +4,28 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:4317
 
+processors:
+  memory_limiter:
+    limit_mib: 50
+    check_interval: 1s
+  batch/traces:
+    timeout: 1s
+    send_batch_size: 50
+
 exporters:
   logging:
     loglevel: debug
   awsxray:
     region: eu-west-1
 
-
 service:
   pipelines:
     traces:
       receivers:
         - otlp
+      processors:
+        - memory_limiter
+        - batch/traces
       exporters:
         - logging
         - awsxray
