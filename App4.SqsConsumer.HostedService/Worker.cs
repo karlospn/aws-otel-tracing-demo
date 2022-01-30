@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using App4.SqsConsumer.HostedService.Helpers;
@@ -130,6 +129,8 @@ namespace App4.SqsConsumer.HostedService
                 {
                     try
                     {
+                        _logger.LogInformation("Delete message from SQS");
+
                         sqsActivity?.SetTag("aws.service", "SQS");
                         sqsActivity?.SetTag("aws.operation", "DeleteMessage");
                         sqsActivity?.SetTag("aws.queue_url", _configuration["SQS:URI"]);
@@ -137,8 +138,6 @@ namespace App4.SqsConsumer.HostedService
                         var response = await _sqs.DeleteMessageAsync(_configuration["SQS:URI"], msg.ReceiptHandle, cancellationToken);
                         sqsActivity?.SetTag("aws.requestId", response.ResponseMetadata.RequestId);
                         sqsActivity?.SetTag("http.status_code", (int)response.HttpStatusCode);
-                        
-
                     }
                     catch (Exception ex)
                     {
