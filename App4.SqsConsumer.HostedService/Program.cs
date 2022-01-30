@@ -37,14 +37,12 @@ namespace App4.SqsConsumer.HostedService
 
                     services.AddOpenTelemetryTracing(builder =>
                     {
-                        var provider = services.BuildServiceProvider();
-                        IConfiguration config = provider
-                                .GetRequiredService<IConfiguration>();
 
                         builder.AddAspNetCoreInstrumentation()
                             .AddXRayTraceId()
-                            .AddAWSInstrumentation()
                             .AddSource(nameof(Worker))
+                            .AddSource("Dynamo.PutItem")
+                            .AddSource("SQS.DeleteMessage")
                             .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("App4"))
                             .AddOtlpExporter(opts =>
                             {

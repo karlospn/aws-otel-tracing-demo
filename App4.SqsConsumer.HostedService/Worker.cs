@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using App4.SqsConsumer.HostedService.Helpers;
@@ -14,12 +15,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Trace;
+using Status = OpenTelemetry.Trace.Status;
 
 namespace App4.SqsConsumer.HostedService
 {
     public class Worker : BackgroundService
     {
         private static readonly ActivitySource Activity = new(nameof(Worker));
+        private static readonly ActivitySource ActivityDynamo = new("Dynamo.PutItem");
+        private static readonly ActivitySource ActivitySQSDelete = new("SQS.DeleteMessage");
 
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
@@ -85,25 +90,72 @@ namespace App4.SqsConsumer.HostedService
                 ActivityKind.Server, 
                 parentContext.ActivityContext))
             {
-                ActivityHelper.AddActivityTags(activity);
-                
-                _logger.LogInformation("Add item to DynamoDb");
-
-                var items = Table.LoadTable(_dynamoDb, "Items");
-                
-                var doc = new Document
+                using (var dynamoActivity = Activity.StartActivity("Dynamo.PutItem",
+                           ActivityKind.Client,
+                           activity.Context))
                 {
-                    ["Id"] = Guid.NewGuid(),
-                    ["Message"] = msg.Body
-                };
+                    try
+                    {
+                        _logger.LogInformation("Add item to DynamoDb");
 
-                await items.PutItemAsync(doc, cancellationToken);
+                        dynamoActivity?.SetTag("aws.service", "DynamoDbV2");
+                        dynamoActivity?.SetTag("aws.operation", "PutItem");
+                        dynamoActivity?.SetTag("aws.table_name", "Items");
+                        dynamoActivity?.SetTag("aws.region", "eu-west-1");
 
-                await _sqs.DeleteMessageAsync(_configuration["SQS:URI"], msg.ReceiptHandle, cancellationToken);
-                
+                        var items = Table.LoadTable(_dynamoDb, "Items");
+
+                        var doc = new Document
+                        {
+                            ["Id"] = Guid.NewGuid(),
+                            ["Message"] = msg.Body
+                        };
+
+                        await items.PutItemAsync(doc, cancellationToken);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        if (dynamoActivity != null)
+                        {
+                            ProcessException(dynamoActivity, ex);
+                        }
+                        throw;
+                    }
+                }
+
+                using (var sqsActivity = Activity.StartActivity("SQS.DeleteMessage",
+                           ActivityKind.Client,
+                           activity.Context))
+                {
+                    try
+                    {
+                        sqsActivity?.SetTag("aws.service", "SQS");
+                        sqsActivity?.SetTag("aws.operation", "DeleteMessage");
+                        sqsActivity?.SetTag("aws.queue_url", _configuration["SQS:URI"]);
+                        sqsActivity?.SetTag("aws.region", "eu-west-1");
+                        var response = await _sqs.DeleteMessageAsync(_configuration["SQS:URI"], msg.ReceiptHandle, cancellationToken);
+                        sqsActivity?.SetTag("aws.requestId", response.ResponseMetadata.RequestId);
+                        sqsActivity?.SetTag("http.status_code", (int)response.HttpStatusCode);
+                        
+
+                    }
+                    catch (Exception ex)
+                    {
+                        if (sqsActivity != null)
+                        {
+                            ProcessException(sqsActivity, ex);
+                        }
+                        throw;
+                    }
+                }
             }
         }
 
-     
+        private void ProcessException(Activity activity, Exception exception)
+        {
+            activity.RecordException(exception);
+            activity.SetStatus(Status.Error.WithDescription(exception.Message));
+        }
     }
 }
