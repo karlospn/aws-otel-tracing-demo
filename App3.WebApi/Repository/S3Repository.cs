@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace App3.WebApi.Repository
 {
@@ -12,12 +13,15 @@ namespace App3.WebApi.Repository
     {
         private readonly IAmazonS3 _s3Client;
         private readonly ILogger<S3Repository> _logger;
+        private readonly IConfiguration _configuration;
 
         public S3Repository(IAmazonS3 s3Client, 
-            ILogger<S3Repository> logger)
+            ILogger<S3Repository> logger, 
+            IConfiguration configuration)
         {
             _s3Client = s3Client;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task Persist(string message)
@@ -29,7 +33,7 @@ namespace App3.WebApi.Repository
                 {
                     InputStream = ms,
                     Key = $"file-{DateTime.UtcNow}",
-                    BucketName = "vytestevent"
+                    BucketName = _configuration["S3:BucketName"]
                 };
 
                 var fileTransferUtility = new TransferUtility(_s3Client);
